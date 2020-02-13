@@ -1,12 +1,10 @@
 package com.example.demo.services;
 
 import com.github.jferard.fastods.*;
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -23,11 +21,11 @@ public class OdsService {
     private static String underline = "_";
     private static String point = ".";
 
-    public static ByteArrayOutputStream exportExcel(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag, String lang, String country) throws IOException {
+    public static ByteArrayInputStream exportExcel(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag, String lang, String country) throws IOException {
         return builderSheet(stringHeaderList, stringContentList, dirName, fileName, titleTag, lang, country);
     }
 
-    private static ByteArrayOutputStream builderSheet(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag, String lang, String country) throws IOException {
+    private static ByteArrayInputStream builderSheet(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag, String lang, String country) throws IOException {
         AtomicInteger rownum = new AtomicInteger();
 
         final OdsFactory odsFactory = OdsFactory.create(Logger.getLogger(titleTag), new Locale(lang, country));
@@ -65,11 +63,7 @@ public class OdsService {
             }
         });
         File file = new File(dirName, fileName.concat(underline.concat(String.valueOf(random).concat(point)).concat(String.valueOf(ods))));
-        FileOutputStream fos = new FileOutputStream(file);
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             writer.saveAs(file);
-            baos.writeTo(fos);
-            return baos;
-        }
+            return new ByteArrayInputStream(FileUtils.readFileToByteArray(file));
     }
 }

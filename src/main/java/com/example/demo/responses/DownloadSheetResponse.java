@@ -28,11 +28,11 @@ import static org.springframework.http.converter.json.AbstractJsonHttpMessageCon
 @RequestMapping(value = "/download")
 public class DownloadSheetResponse {
 
-    @PostMapping("/sheet/{content-type}")
+    @GetMapping("/sheet/{content-type}")
     public ResponseEntity optionalDownload(@RequestBody StringsDTO stringsDTOS, @PathVariable("content-type") String contentType) throws IOException {
         System.out.println(stringsDTOS.getHeaders());
         switch (contentType) {
-            case "xls":
+            case "application/vnd.ms-excel":
                 return ResponseEntity
                         .ok()
                         .contentType(new MediaType("application", "vnd.ms-excel", DEFAULT_CHARSET))
@@ -44,21 +44,20 @@ public class DownloadSheetResponse {
                                         stringsDTOS.getFileName(),
                                         stringsDTOS.getTitleTag())
                                 .toByteArray()));
-            case "ods":
+            case "application/vnd.oasis.opendocument.spreadsheet":
                 return ResponseEntity
                         .ok()
                         .contentType(new MediaType("application", "vnd.oasis.opendocument.spreadsheet", DEFAULT_CHARSET))
                         .header("content-disposition", "attachment; filename = ".concat(stringsDTOS.getFileName().concat(".xlsx")))
-                        .body(new ByteArrayInputStream(OdsService
+                        .body(OdsService
                                 .exportExcel(stringsDTOS.getHeaders(),
                                         stringsDTOS.getContents(),
                                         stringsDTOS.getDirName(),
                                         stringsDTOS.getFileName(),
                                         stringsDTOS.getTitleTag(),
                                         stringsDTOS.getLocal().get(0),
-                                        stringsDTOS.getLocal().get(1))
-                                .toByteArray()));
-            case "xlsx":
+                                        stringsDTOS.getLocal().get(1)));
+            case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
                 return ResponseEntity
                         .ok()
                         .contentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet", DEFAULT_CHARSET))
