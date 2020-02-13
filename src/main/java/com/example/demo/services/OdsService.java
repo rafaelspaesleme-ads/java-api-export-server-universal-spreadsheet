@@ -17,15 +17,15 @@ import static com.example.demo.enums.Extension.ods;
 @Service
 public class OdsService {
 
-    private static Random random = new Random();
-    private static String underline = "_";
-    private static String point = ".";
+    private Random random = new Random();
+    private String underline = "_";
+    private String point = ".";
 
-    public static ByteArrayInputStream exportExcel(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag, String lang, String country) throws IOException {
+    public ByteArrayInputStream exportExcel(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag, String lang, String country) throws IOException {
         return builderSheet(stringHeaderList, stringContentList, dirName, fileName, titleTag, lang, country);
     }
 
-    private static ByteArrayInputStream builderSheet(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag, String lang, String country) throws IOException {
+    private ByteArrayInputStream builderSheet(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag, String lang, String country) throws IOException {
         AtomicInteger rownum = new AtomicInteger();
 
         final OdsFactory odsFactory = OdsFactory.create(Logger.getLogger(titleTag), new Locale(lang, country));

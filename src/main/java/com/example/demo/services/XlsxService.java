@@ -18,15 +18,15 @@ import static com.example.demo.enums.Extension.xlsx;
 @Service
 public class XlsxService {
 
-    private static Random random = new Random();
-    private static String underline = "_";
-    private static String point = ".";
+    private Random random = new Random();
+    private String underline = "_";
+    private String point = ".";
 
-    public static ByteArrayOutputStream exportExcel(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag) throws IOException {
+    public ByteArrayOutputStream exportExcel(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag) throws IOException {
         return builderSheet(stringHeaderList, stringContentList, dirName, fileName, titleTag);
     }
 
-    private static ByteArrayOutputStream builderSheet(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag) throws IOException {
+    private ByteArrayOutputStream builderSheet(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag) throws IOException {
         AtomicInteger rownum = new AtomicInteger();
 
         XSSFWorkbook workbook = new XSSFWorkbook();
@@ -54,12 +54,11 @@ public class XlsxService {
                         });
             });
         });
-
-        FileOutputStream fileOut = new FileOutputStream(new File(dirName, fileName.concat(underline.concat(String.valueOf(random).concat(point)).concat(String.valueOf(xlsx)))));
+        FileOutputStream fos = new FileOutputStream(new File(dirName, fileName.concat(underline.concat(String.valueOf(random).concat(point)).concat(String.valueOf(xlsx)))));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            workbook.write(fileOut);
-            baos.writeTo(fileOut);
+            workbook.write(fos);
+            baos.writeTo(fos);
             return baos;
         } finally {
             workbook.close();

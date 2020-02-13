@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.util.List;
 import java.util.Random;
@@ -18,15 +17,15 @@ import static com.example.demo.enums.Extension.*;
 @Service
 public class XlsService {
 
-    private static Random random = new Random();
-    private static String underline = "_";
-    private static String point = ".";
+    private Random random = new Random();
+    private String underline = "_";
+    private String point = ".";
 
-    public static ByteArrayOutputStream exportExcel(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag) throws IOException {
+    public ByteArrayOutputStream exportExcel(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag) throws IOException {
         return builderSheet(stringHeaderList, stringContentList, dirName, fileName, titleTag);
     }
 
-    private static ByteArrayOutputStream builderSheet(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag) throws IOException {
+    private ByteArrayOutputStream builderSheet(List<String> stringHeaderList, List<List<String>> stringContentList, String dirName, String fileName, String titleTag) throws IOException {
         AtomicInteger rownum = new AtomicInteger();
 
         final Workbook workbook = new HSSFWorkbook();

@@ -3,6 +3,7 @@ package com.example.demo.responses;
 import com.example.demo.DTO.StringsDTO;
 import com.example.demo.services.OdsService;
 import com.example.demo.services.XlsService;
+import com.example.demo.services.XlsxService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,46 +29,53 @@ import static org.springframework.http.converter.json.AbstractJsonHttpMessageCon
 @RequestMapping(value = "/download")
 public class DownloadSheetResponse {
 
-    @GetMapping("/sheet/{content-type}")
-    public ResponseEntity optionalDownload(@RequestBody StringsDTO stringsDTOS, @PathVariable("content-type") String contentType) throws IOException {
+    private final XlsxService xlsxService;
+    private final OdsService odsService;
+    private final XlsService xlsService;
+
+    public DownloadSheetResponse(XlsxService xlsxService, OdsService odsService, XlsService xlsService) {
+        this.xlsxService = xlsxService;
+        this.odsService = odsService;
+        this.xlsService = xlsService;
+    }
+
+    @PostMapping("/sheet/{content-type}")
+    public ResponseEntity<ByteArrayInputStream> optionalDownload(@RequestBody StringsDTO stringsDTOS, @PathVariable("content-type") String contentType) throws IOException {
         System.out.println(stringsDTOS.getHeaders());
         switch (contentType) {
-            case "application/vnd.ms-excel":
+            case "xls":
                 return ResponseEntity
                         .ok()
                         .contentType(new MediaType("application", "vnd.ms-excel", DEFAULT_CHARSET))
                         .header("content-disposition", "attachment; filename = ".concat(stringsDTOS.getFileName().concat(".xls")))
-                        .body(new ByteArrayInputStream(XlsService
-                                .exportExcel(stringsDTOS.getHeaders(),
+                        .body(new ByteArrayInputStream(xlsService.exportExcel(stringsDTOS.getHeaders(),
                                         stringsDTOS.getContents(),
                                         stringsDTOS.getDirName(),
                                         stringsDTOS.getFileName(),
                                         stringsDTOS.getTitleTag())
                                 .toByteArray()));
-            case "application/vnd.oasis.opendocument.spreadsheet":
+            case "ods":
                 return ResponseEntity
                         .ok()
                         .contentType(new MediaType("application", "vnd.oasis.opendocument.spreadsheet", DEFAULT_CHARSET))
-                        .header("content-disposition", "attachment; filename = ".concat(stringsDTOS.getFileName().concat(".xlsx")))
-                        .body(OdsService
-                                .exportExcel(stringsDTOS.getHeaders(),
+                        .header("content-disposition", "attachment; filename = ".concat(stringsDTOS.getFileName().concat(".ods")))
+                        .body(odsService.exportExcel(stringsDTOS.getHeaders(),
                                         stringsDTOS.getContents(),
                                         stringsDTOS.getDirName(),
                                         stringsDTOS.getFileName(),
                                         stringsDTOS.getTitleTag(),
                                         stringsDTOS.getLocal().get(0),
                                         stringsDTOS.getLocal().get(1)));
-            case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            case "xlsx":
                 return ResponseEntity
                         .ok()
                         .contentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet", DEFAULT_CHARSET))
-                        .header("content-disposition", "attachment; filename = ".concat(stringsDTOS.getFileName().concat(".ods")))
-                        .body(new ByteArrayInputStream(XlsService
-                                .exportExcel(stringsDTOS.getHeaders(),
-                                        stringsDTOS.getContents(),
-                                        stringsDTOS.getDirName(),
-                                        stringsDTOS.getFileName(),
-                                        stringsDTOS.getTitleTag())
+                        .header("content-disposition", "attachment; filename = ".concat(stringsDTOS.getFileName().concat(".xlsx")))
+                        .body(new ByteArrayInputStream(xlsxService.exportExcel(stringsDTOS.getHeaders(),
+                                stringsDTOS.getContents(),
+                                stringsDTOS.getDirName(),
+                                stringsDTOS.getFileName(),
+                                stringsDTOS.getTitleTag())
                                 .toByteArray()));
             default:
                 return ResponseEntity.noContent().build();
